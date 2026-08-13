@@ -19,10 +19,15 @@ public class AuthService {
                 String role = parts[3];
 
                 if (storedUsername.equals(username) && storedPassword.equals(password)) {
-                    if (role.equals("Customer")) {
-                        return new Customer(id, storedUsername, storedPassword);
-                    }
-// TODO: Add else-if statements for Administrator, Scheduler, and Manager here later                
+                   if (role.equalsIgnoreCase("Customer")) {
+                        return new models.Customer(id, username, password);
+                    } else if (role.equalsIgnoreCase("Administrator")) {
+                        return new models.Administrator(id, username, password);
+                    } else if (role.equalsIgnoreCase("Scheduler")) {
+                        return new models.Scheduler(id, username, password);
+                    } else if (role.equalsIgnoreCase("Manager")) {
+                        return new models.Manager(id, username, password);
+                    }// TODO: Add else-if statements for Administrator, Scheduler, and Manager here later                
                     System.out.println("Login successful for user: " + username + " with role: " + role);
                 }
             }

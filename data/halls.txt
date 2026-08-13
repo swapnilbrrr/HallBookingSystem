@@ -3,3 +3,7 @@
 # type: AUDITORIUM | BANQUET | MEETING_ROOM
 # Example:
 # 1|Main Auditorium|AUDITORIUM|300
+H001,Grand Symphony,Auditorium,1000,300.0
+H002,Royal Feast,Banquet Hall,300,100.0
+H003,Executive Alpha,Meeting Room,30,50.0
+H004,Executive Beta,Meeting Room,30,50.0

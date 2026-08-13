@@ -2,3 +2,4 @@
 # Format: id|hallId|userId|startISO|endISO|status
 # Example:
 # 1|1|2|2026-08-15T09:00|2026-08-15T11:00|CONFIRMED
+B1786629561989,U001,H004,22-10-2002,8,400.0,PAID
