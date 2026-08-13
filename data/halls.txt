@@ -1,0 +1,5 @@
+# halls.txt
+# Format: id|name|type|capacity
+# type: AUDITORIUM | BANQUET | MEETING_ROOM
+# Example:
+# 1|Main Auditorium|AUDITORIUM|300

@@ -1,0 +1,9 @@
+# users.txt
+# Format: id|name|email|password|role
+# Example:
+# 1|Alice|alice@example.com|password|CUSTOMER
+U001,john_customer,pass123,Customer
+U002,sarah_admin,admin123,Administrator
+U003,mike_scheduler,sch123,Scheduler
+U004,jane_manager,mgr123,ManagerU009,
+swapnil_kattu,pass123,Customer

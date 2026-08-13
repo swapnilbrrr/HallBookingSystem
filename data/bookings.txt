@@ -1,0 +1,4 @@
+# bookings.txt
+# Format: id|hallId|userId|startISO|endISO|status
+# Example:
+# 1|1|2|2026-08-15T09:00|2026-08-15T11:00|CONFIRMED
