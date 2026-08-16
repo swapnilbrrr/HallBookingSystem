@@ -1,9 +1,8 @@
 # halls.txt
-# Format: id|name|type|capacity
-# type: AUDITORIUM | BANQUET | MEETING_ROOM
-# Example:
-# 1|Main Auditorium|AUDITORIUM|300
-H001,Grand Symphony,Auditorium,1000,300.0
-H002,Royal Feast,Banquet Hall,300,100.0
-H003,Executive Alpha,Meeting Room,30,50.0
-H004,Executive Beta,Meeting Room,30,50.0
+# Format: id|name|type|capacity|ratePerHour|status
+# type:   AUDITORIUM | BANQUET_HALL | MEETING_ROOM
+# status: ACTIVE | INACTIVE
+H001|Grand Symphony|AUDITORIUM|1000|300.00|ACTIVE
+H002|Royal Feast|BANQUET_HALL|300|100.00|ACTIVE
+H003|Executive Alpha|MEETING_ROOM|30|50.00|ACTIVE
+H004|Executive Beta|MEETING_ROOM|30|50.00|ACTIVE

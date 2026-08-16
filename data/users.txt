@@ -1,9 +1,13 @@
 # users.txt
-# Format: id|name|email|password|role
-# Example:
-# 1|Alice|alice@example.com|password|CUSTOMER
-U001,john_customer,pass123,Customer
-U002,sarah_admin,admin123,Administrator
-U003,mike_scheduler,sch123,Scheduler
-U004,jane_manager,mgr123,ManagerU009,
-swapnil_kattu,pass123,Customer
+# Format: id|username|password|role|status|fullName|email|phone
+# role:   CUSTOMER | SCHEDULER | ADMINISTRATOR | MANAGER
+# status: ACTIVE | BLOCKED
+U001|john_customer|pass123|CUSTOMER|ACTIVE|John Tan|john.tan@example.com|012-3456789
+U002|sarah_admin|admin123|ADMINISTRATOR|ACTIVE|Sarah Lim|sarah.lim@hallsymphony.com|012-2233445
+U003|mike_scheduler|sch123|SCHEDULER|ACTIVE|Mike Chan|mike.chan@hallsymphony.com|012-3344556
+U004|jane_manager|mgr123|MANAGER|ACTIVE|Jane Wong|jane.wong@hallsymphony.com|012-4455667
+U009|swapnil_kattu|pass123|CUSTOMER|ACTIVE|Swapnil Katuwal||
+U010|alan_scheduler|sch456|SCHEDULER|ACTIVE|Alan Raj|alan.raj@hallsymphony.com|012-5566778
+U011|siti_customer|pass456|CUSTOMER|ACTIVE|Siti Nurhaliza|siti.n@example.com|012-6677889
+U012|dana_customer|pass789|CUSTOMER|BLOCKED|Dana Kumar|dana.k@example.com|012-7788990
+U013|porn|pornhub.com|CUSTOMER|ACTIVE|pornhub|pornhub@pornhub.com|+977 97878787

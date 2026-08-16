@@ -1,60 +1,66 @@
 package ui;
 
-import services.AuthService;
 import models.User;
+import services.AuthService;
+import ui.components.BaseFrame;
+import ui.components.FormPanel;
+import ui.components.UiUtils;
 
-import java.awt.LayoutManager;
-import java.awt.GridLayout;
+import javax.swing.JButton;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
 
-import javax.swing.*;
+/**
+ * The entry screen.
+ *
+ * Once {@link AuthService} has identified the account, this class calls
+ * {@code user.showDashboard()} and never asks which role signed in: each
+ * {@link User} subclass knows which window to open.
+ */
+public class LoginFrame extends BaseFrame {
 
-public class LoginFrame extends JFrame {
-    private JTextField usernameField = new JTextField();
-    private JPasswordField passwordField = new JPasswordField();
+    private static final long serialVersionUID = 1L;
+
+    private final AuthService auth = new AuthService();
+    private final JTextField usernameField;
+    private final JPasswordField passwordField;
 
     public LoginFrame() {
-        setTitle("Hall Symphony Inc. - Login");
-        setSize(350, 200);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout((LayoutManager) new GridLayout(3, 2, 10, 10)); // Keep this grid
+        super("Login", 470, 320);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JLabel userLabel = new JLabel("  Username:");
-        usernameField = new JTextField();
-        
-        JLabel passLabel = new JLabel("  Password:");
-        passwordField = new JPasswordField();
-        
-        JButton loginButton = new JButton("Login");
-        JButton registerButton = new JButton("Register"); // NEW BUTTON
+        add(UiUtils.header("Hall Booking Management System",
+                "Please sign in to continue."), BorderLayout.NORTH);
 
-        add(userLabel);
-        add(usernameField);
-        add(passLabel);
-        add(passwordField);
-        add(registerButton); // Add register button to the frame
-        add(loginButton);
+        FormPanel form = new FormPanel();
+        usernameField = form.addTextField("Username:", "");
+        passwordField = form.addPasswordField("Password:");
+        form.addNote("Sample accounts - customer: john_customer / pass123");
+        form.addNote("scheduler: mike_scheduler / sch123      manager: jane_manager / mgr123");
+        form.addNote("administrator: sarah_admin / admin123");
+        add(form, BorderLayout.CENTER);
 
-        loginButton.addActionListener(e -> handleLogin());
-        
-        // NEW ACTION LISTENER
-        registerButton.addActionListener(e -> {
-            this.dispose();
-            new RegistrationFrame().setVisible(true);
-        });
+        JButton loginButton = UiUtils.button("Login", this::handleLogin);
+        JButton registerButton = UiUtils.button("Register", this::openRegistration);
+        add(UiUtils.buttonRow(registerButton, loginButton), BorderLayout.SOUTH);
+
+        getRootPane().setDefaultButton(loginButton); // Enter submits the form
     }
 
     private void handleLogin() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
-        User user = AuthService.authenticate(username, password);
-        if (user != null) {
-            JOptionPane.showMessageDialog(this, "Login successful! Welcome " + user.getUsername());
-            user.showDashboard();
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
-        }
+        UiUtils.guarded(this, () -> {
+            User user = auth.login(username, password);
+            user.showDashboard(); // polymorphic: the role decides the screen
+            dispose();
+        });
+    }
+
+    private void openRegistration() {
+        dispose();
+        new RegistrationFrame().setVisible(true);
     }
 }

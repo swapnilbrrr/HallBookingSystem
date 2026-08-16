@@ -1,0 +1,10 @@
+# Compiled Java classes (regenerate with: javac -d bin $(find src -name "*.java"))
+bin/
+
+# Temporary verification harness, not part of the deliverable
+smoketest/
+
+# IDE and OS noise
+*.class
+.DS_Store
+Thumbs.db

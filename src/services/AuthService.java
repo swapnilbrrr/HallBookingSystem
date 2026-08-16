@@ -1,81 +1,102 @@
 package services;
 
-import models.User;
-import utils.FileHandler;
-import java.util.List;
 import models.Customer;
+import models.User;
+import repository.UserRepository;
+import utils.Validator;
 
+import java.util.Optional;
+
+/**
+ * Authentication and self-service account changes.
+ *
+ * Every method is an instance method, and every rejection is reported by
+ * throwing {@link Validator.ValidationException} carrying a message fit to show
+ * the user. A screen therefore needs one catch block rather than a chain of
+ * null checks.
+ */
 public class AuthService {
-    private static final String USER_FILE = "data/users.txt";
 
-    public static User authenticate(String username, String password) {
-        List<String> users = FileHandler.readLines(USER_FILE);
-        for (String userLine : users) {
-            String[] parts = userLine.split(",");
-            if (parts.length == 4) {
-                String id = parts[0].trim();
-                String storedUsername = parts[1].trim();
-                String storedPassword = parts[2].trim();
-                String role = parts[3];
+    private final UserRepository users = new UserRepository();
 
-                if (storedUsername.equals(username) && storedPassword.equals(password)) {
-                   if (role.equalsIgnoreCase("Customer")) {
-                        return new models.Customer(id, username, password);
-                    } else if (role.equalsIgnoreCase("Administrator")) {
-                        return new models.Administrator(id, username, password);
-                    } else if (role.equalsIgnoreCase("Scheduler")) {
-                        return new models.Scheduler(id, username, password);
-                    } else if (role.equalsIgnoreCase("Manager")) {
-                        return new models.Manager(id, username, password);
-                    }// TODO: Add else-if statements for Administrator, Scheduler, and Manager here later                
-                    System.out.println("Login successful for user: " + username + " with role: " + role);
-                }
-            }
-        }
-        return null; // Authentication failed
-    }
-    
-public boolean registerCustomer(String username, String password) {
-        List<String> usersData = FileHandler.readLines(USER_FILE);
-        
-        // Basic check to prevent duplicate usernames
-        for (String line : usersData) {
-            // Guard clause: Skip empty lines or malformed data
-            if (line == null || line.trim().isEmpty()) {
-                continue; 
-            }
+    /**
+     * Verifies credentials and returns the matching account.
+     *
+     * @throws Validator.ValidationException if the credentials are wrong or the
+     *         account has been blocked by an administrator
+     */
+    public User login(String username, String password) {
+        String name = username == null ? "" : username.trim();
+        String secret = password == null ? "" : password;
 
-            String[] data = line.split(",");
-            // Ensure the line has at least enough columns to check the username
-            if (data.length >= 2) { 
-                if (data[1].trim().equalsIgnoreCase(username)) {
-                    return false; // Username exists
-                }
-            }
+        if (name.isEmpty() || secret.isEmpty()) {
+            Validator.fail("Please enter both your username and password.");
         }
 
-        // Generate a simple ID (e.g., U005)
-        String newId = "U" + String.format("%03d", usersData.size() + 1);
-        String newUserRecord = newId + "," + username + "," + password + ",Customer";
-        
-        FileHandler.appendLine(USER_FILE, newUserRecord);
-        return true;
-    }
-
-    public void updateCustomerPassword(String userId, String newPassword) {
-        List<String> usersData = FileHandler.readLines(USER_FILE);
-        List<String> updatedData = new java.util.ArrayList<>();
-
-        for (String line : usersData) {
-            String[] data = line.split(",");
-            if (data[0].trim().equals(userId)) {
-                // Rebuild the line with the new password
-                updatedData.add(data[0] + "," + data[1] + "," + newPassword + "," + data[3]);
-            } else {
-                updatedData.add(line);
-            }
+        Optional<User> found = users.findByUsername(name);
+        if (!found.isPresent() || !found.get().getPassword().equals(secret)) {
+            // Deliberately vague: do not reveal whether the username exists.
+            Validator.fail("Invalid username or password.");
         }
-        FileHandler.writeAllLines(USER_FILE, updatedData);
+
+        User user = found.get();
+        if (!user.canLogin()) {
+            Validator.fail("This account has been blocked. Please contact the administrator.");
+        }
+        return user;
     }
-    
+
+    /** Registers a new customer account and returns it. */
+    public Customer registerCustomer(String username, String password, String confirmPassword,
+                                     String fullName, String email, String phone) {
+        String name = Validator.username(username);
+        Validator.password(password);
+        if (!password.equals(confirmPassword)) {
+            Validator.fail("The two passwords do not match.");
+        }
+        if (users.usernameExists(name)) {
+            Validator.fail("That username is already taken. Please choose another.");
+        }
+
+        Customer customer = new Customer(
+                users.nextId("U"),
+                name,
+                password,
+                models.enums.UserStatus.ACTIVE,
+                Validator.optionalText(fullName, "Full name"),
+                Validator.email(email),
+                Validator.phone(phone));
+        users.insert(customer);
+        return customer;
+    }
+
+    /** Changes a password after confirming the current one. */
+    public void changePassword(User user, String currentPassword, String newPassword,
+                               String confirmPassword) {
+        if (!user.getPassword().equals(currentPassword == null ? "" : currentPassword)) {
+            Validator.fail("Your current password is incorrect.");
+        }
+        Validator.password(newPassword);
+        if (!newPassword.equals(confirmPassword)) {
+            Validator.fail("The two new passwords do not match.");
+        }
+        if (newPassword.equals(currentPassword)) {
+            Validator.fail("The new password must be different from the current one.");
+        }
+        user.setPassword(newPassword);
+        users.update(user);
+    }
+
+    /** Updates the editable parts of a profile; the username and role are fixed. */
+    public void updateProfile(User user, String fullName, String email, String phone) {
+        user.setFullName(Validator.optionalText(fullName, "Full name"));
+        user.setEmail(Validator.email(email));
+        user.setPhone(Validator.phone(phone));
+        users.update(user);
+    }
+
+    /** Re-reads an account from storage, so a screen can refresh after a change. */
+    public Optional<User> reload(String userId) {
+        return users.findById(userId);
+    }
 }

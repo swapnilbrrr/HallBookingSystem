@@ -1,2 +1,6 @@
 # issues.txt
-# Free-form list of issues or logs
+# Format: id|customerId|hallId|bookingId|description|status|assignedSchedulerId|response|createdAt
+# status: IN_PROGRESS | DONE | CLOSED | CANCELLED
+I001|U001|H002|B005|Air conditioning was not working during our event|IN_PROGRESS|||2026-07-19T09:15
+I002|U011|H001|B006|Projector in the auditorium had no signal|DONE|U003|Technician replaced the faulty HDMI cable, then tested the projector.|2026-08-06T10:30
+I003|U009|H003|B007|Room was not cleaned before our meeting started|CLOSED|U010|Housekeeping was rescheduled, and the customer confirmed the matter is resolved.|2026-08-13T08:20

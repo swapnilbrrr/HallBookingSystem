@@ -1,0 +1,6 @@
+# maintenance.txt
+# Windows reserved for maintenance work; bookings may not overlap these.
+# Format: id|hallId|start|end|remarks
+# start and end use ISO-8601, e.g. 2026-09-01T08:00
+M001|H001|2026-09-14T08:00|2026-09-14T18:00|Air conditioning check and lighting repairs
+M002|H002|2026-10-05T08:00|2026-10-05T12:00|Stage flooring inspection, curtain replacement
